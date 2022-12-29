@@ -26,7 +26,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="SecurityDriven.FastXor.Tests\**" />
+		<EmbeddedResource Remove="SecurityDriven.FastXor.Tests\**" />
 		<None Remove="*.xml" />
+		<None Remove="SecurityDriven.FastXor.Tests\**" />
 		<None Remove="LICENSE.md" />
 		<None Remove="README.md" />
 	</ItemGroup>

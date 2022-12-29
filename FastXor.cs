@@ -57,7 +57,7 @@ namespace SecurityDriven
 				Unsafe.As<byte, long>(ref dest[i]) ^= Unsafe.As<byte, long>(ref leftSpan[i]);
 			}
 
-			for (; i < dest.Length; i++)
+			for (; i < dest.Length; ++i)
 			{
 				dest[i] ^= leftSpan[i];
 			}
@@ -101,18 +101,18 @@ namespace SecurityDriven
 				vectorLength >>= 1;
 				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
 				{
-					Unsafe.As<byte, Vector<byte>>(ref dest[i]) ^= Unsafe.As<byte, Vector<byte>>(ref leftSpan[i]);
+					Unsafe.As<byte, Vector<byte>>(ref dest[i]) = Unsafe.As<byte, Vector<byte>>(ref leftSpan[i]) ^ Unsafe.As<byte, Vector<byte>>(ref rightSpan[i]);
 				}
 			}// if Vector.IsHardwareAccelerated
 
 			for (int vectorLimit = dest.Length - sizeof(long); i <= vectorLimit; i += sizeof(long))
 			{
-				Unsafe.As<byte, long>(ref dest[i]) ^= Unsafe.As<byte, long>(ref leftSpan[i]);
+				Unsafe.As<byte, long>(ref dest[i]) = Unsafe.As<byte, long>(ref leftSpan[i]) ^ Unsafe.As<byte, long>(ref rightSpan[i]);
 			}
 
-			for (; i < dest.Length; i++)
+			for (; i < dest.Length; ++i)
 			{
-				dest[i] ^= leftSpan[i];
+				dest[i] = (byte)(leftSpan[i] ^ rightSpan[i]);
 			}
 		}// Xor(dest, left, right)
 	}//class FastXor
