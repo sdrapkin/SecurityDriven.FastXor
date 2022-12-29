@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<PackageId>FastXor</PackageId>
+		<TargetFrameworks>net6.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<Authors>Stan Drapkin</Authors>
+		<Company>https://SecurityDriven.net</Company>
+		<Copyright>Copyright © $([System.DateTime]::UtcNow.ToString(yyyy)) Stan Drapkin</Copyright>
+		<RepositoryUrl>https://github.com/sdrapkin/SecurityDriven.FastXor</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Version>1.0.0</Version>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Inferno.snk</AssemblyOriginatorKeyFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIconUrl>https://avatars.githubusercontent.com/u/9137858?s=128</PackageIconUrl>
+		<PackageReleaseNotes>Fast Xor for .NET byte spans.</PackageReleaseNotes>
+		<Description>Fast Xor for .NET byte spans.</Description>
+		<PackageTags>Xor</PackageTags>
+		<PackageProjectUrl>https://github.com/sdrapkin/SecurityDriven.FastXor</PackageProjectUrl>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>SecurityDriven.FastXor.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="*.xml" />
+		<None Remove="LICENSE.md" />
+		<None Remove="README.md" />
+	</ItemGroup>
+</Project>
