@@ -5,9 +5,10 @@ namespace SecurityDriven.Tests
 	[TestClass]
 	public class FastXorTests
 	{
-		[ThreadStatic] static byte[] _dest, _left, _right;
+		[ThreadStatic] static byte[]? _dest, _left, _right;
 		const int MAX_DATA_LENGTH = 32 * 1024;
 		const int ITERATIONS = 20_000;
+		const int UNALIGNED_MAX = 32;
 
 		public static void InitData(int length)
 		{
@@ -25,12 +26,14 @@ namespace SecurityDriven.Tests
 		{
 			for (int i = 0; i < ITERATIONS; ++i)
 			{
-				int length = Random.Shared.Next(minValue: 0, maxValue: MAX_DATA_LENGTH + 1);
+				int unalignedStart = Random.Shared.Next(UNALIGNED_MAX);
+				int length = Random.Shared.Next(minValue: 0, maxValue: MAX_DATA_LENGTH - unalignedStart + 1);
+
 				InitData(length);
 
-				var destSpan = _dest.AsSpan(0, length);
-				var leftSpan = _left.AsSpan(0, length);
-				var rightSpan = _right.AsSpan(0, length);
+				var destSpan = _dest.AsSpan(unalignedStart, length);
+				var leftSpan = _left.AsSpan(unalignedStart, length);
+				var rightSpan = _right.AsSpan(unalignedStart, length);
 
 				Correct.Xor(destSpan, leftSpan, rightSpan);
 				string correctMAC = Correct.MAC(destSpan);
@@ -47,12 +50,14 @@ namespace SecurityDriven.Tests
 		{
 			for (int i = 0; i < ITERATIONS; ++i)
 			{
-				int length = Random.Shared.Next(minValue: 0, maxValue: MAX_DATA_LENGTH + 1);
+				int unalignedStart = Random.Shared.Next(UNALIGNED_MAX);
+				int length = Random.Shared.Next(minValue: 0, maxValue: MAX_DATA_LENGTH - unalignedStart + 1);
+
 				InitData(length);
 
-				var destSpan = _dest.AsSpan(0, length);
-				var leftSpan = _left.AsSpan(0, length);
-				var rightSpan = _right.AsSpan(0, length);
+				var destSpan = _dest.AsSpan(unalignedStart, length);
+				var leftSpan = _left.AsSpan(unalignedStart, length);
+				var rightSpan = _right.AsSpan(unalignedStart, length);
 
 				leftSpan.CopyTo(destSpan); // store copy of leftSpan into destSpan
 				Correct.Xor(dest: leftSpan, left: rightSpan); // xor rightSpan into leftSpan
