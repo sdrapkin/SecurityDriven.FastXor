@@ -109,7 +109,7 @@ namespace SecurityDriven.Tests
 				FastXor.Xor(dest: leftSpan, left: leftSpan, right: leftSpan);
 				Assert.IsTrue(SpanAll(leftSpan, static b => b == 0));
 			}//for
-		}//Xor_Overlap
+		}//Xor_Overlap()
 	}//class FastXorTests
 
 	internal static class Correct

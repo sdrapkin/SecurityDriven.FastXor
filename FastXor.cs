@@ -20,13 +20,14 @@ namespace SecurityDriven
 			if (dest.Length != left.Length)
 				ThrowArgumentOutOfRange(message: nameof(dest) + ".Length != " + nameof(left) + ".length");
 
-			int i = 0;
+			int i = 0, vectorLimit;
 			Span<byte> leftSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(left), left.Length);
 
 			if (Vector.IsHardwareAccelerated)
 			{
 				int vectorLength = Vector<byte>.Count << 2;
-				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
+				vectorLimit = dest.Length - vectorLength;
+				for (; i <= vectorLimit; i += vectorLength)
 				{
 					ref (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>) reference = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>)>(ref dest[i]);
 					ref (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>) leftVectors = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>)>(ref leftSpan[i]);
@@ -37,7 +38,8 @@ namespace SecurityDriven
 				}//for
 
 				vectorLength >>= 1;
-				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
+				vectorLimit = dest.Length - vectorLength;
+				for (; i <= vectorLimit; i += vectorLength)
 				{
 					ref (Vector<byte>, Vector<byte>) reference2 = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>)>(ref dest[i]);
 					ref (Vector<byte>, Vector<byte>) leftVectors2 = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>)>(ref leftSpan[i]);
@@ -46,13 +48,15 @@ namespace SecurityDriven
 				}//for
 
 				vectorLength >>= 1;
-				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
+				vectorLimit = dest.Length - vectorLength;
+				for (; i <= vectorLimit; i += vectorLength)
 				{
 					Unsafe.As<byte, Vector<byte>>(ref dest[i]) ^= Unsafe.As<byte, Vector<byte>>(ref leftSpan[i]);
 				}
 			}// if Vector.IsHardwareAccelerated
 
-			for (int vectorLimit = dest.Length - sizeof(long); i <= vectorLimit; i += sizeof(long))
+			vectorLimit = dest.Length - sizeof(long);
+			for (; i <= vectorLimit; i += sizeof(long))
 			{
 				Unsafe.As<byte, long>(ref dest[i]) ^= Unsafe.As<byte, long>(ref leftSpan[i]);
 			}
@@ -70,14 +74,15 @@ namespace SecurityDriven
 			if ((dest.Length != left.Length) || (dest.Length != right.Length))
 				ThrowArgumentOutOfRange(message: nameof(dest) + "," + nameof(left) + "," + nameof(right) + " have different lengths.");
 
-			int i = 0;
+			int i = 0, vectorLimit;
 			Span<byte> leftSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(left), left.Length);
 			Span<byte> rightSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(right), right.Length);
 
 			if (Vector.IsHardwareAccelerated)
 			{
 				int vectorLength = Vector<byte>.Count << 2;
-				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
+				vectorLimit = dest.Length - vectorLength;
+				for (; i <= vectorLimit; i += vectorLength)
 				{
 					ref (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>) destVectors = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>)>(ref dest[i]);
 					ref (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>) leftVectors = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>, Vector<byte>, Vector<byte>)>(ref leftSpan[i]);
@@ -89,7 +94,8 @@ namespace SecurityDriven
 				}//for
 
 				vectorLength >>= 1;
-				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
+				vectorLimit = dest.Length - vectorLength;
+				for (; i <= vectorLimit; i += vectorLength)
 				{
 					ref (Vector<byte>, Vector<byte>) destVectors = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>)>(ref dest[i]);
 					ref (Vector<byte>, Vector<byte>) leftVectors = ref Unsafe.As<byte, (Vector<byte>, Vector<byte>)>(ref leftSpan[i]);
@@ -99,13 +105,15 @@ namespace SecurityDriven
 				}//for
 
 				vectorLength >>= 1;
-				for (int vectorLimit = dest.Length - vectorLength; i <= vectorLimit; i += vectorLength)
+				vectorLimit = dest.Length - vectorLength;
+				for (; i <= vectorLimit; i += vectorLength)
 				{
 					Unsafe.As<byte, Vector<byte>>(ref dest[i]) = Unsafe.As<byte, Vector<byte>>(ref leftSpan[i]) ^ Unsafe.As<byte, Vector<byte>>(ref rightSpan[i]);
 				}
 			}// if Vector.IsHardwareAccelerated
 
-			for (int vectorLimit = dest.Length - sizeof(long); i <= vectorLimit; i += sizeof(long))
+			vectorLimit = dest.Length - sizeof(long);
+			for (; i <= vectorLimit; i += sizeof(long))
 			{
 				Unsafe.As<byte, long>(ref dest[i]) = Unsafe.As<byte, long>(ref leftSpan[i]) ^ Unsafe.As<byte, long>(ref rightSpan[i]);
 			}
