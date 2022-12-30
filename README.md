@@ -2,4 +2,4 @@
 
 ### by [Stan Drapkin](https://github.com/sdrapkin/)
 
-## Fast `Xor` for .NET byte spans.
+## Fast `Xor` for .NET
