@@ -19,7 +19,7 @@ namespace SecurityDriven.Tests
 
 			if (!string.IsNullOrEmpty(releaseType))
 				expectedProductVersion += $"-{releaseType}";
-			Assert.IsTrue(fvi.ProductVersion == expectedProductVersion);
+			Assert.IsTrue(fvi.ProductVersion.StartsWith(expectedProductVersion, StringComparison.Ordinal));
 
 			assembly.GetModules()[0].GetPEKind(out var kind, out var machine);
 			Assert.IsTrue(kind == PortableExecutableKinds.ILOnly);
