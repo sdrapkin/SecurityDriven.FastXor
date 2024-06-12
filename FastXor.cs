@@ -18,13 +18,14 @@ namespace SecurityDriven
 		public static void Xor(Span<byte> dest, ReadOnlySpan<byte> left)
 		{
 			if (dest.Length != left.Length)
-				ThrowArgumentOutOfRange(message: nameof(dest) + ".Length != " + nameof(left) + ".length");
+				ThrowArgumentOutOfRange(message: $"{nameof(dest)}.Length != {nameof(left)}.Length");
 
 			int i = 0, vectorLimit;
 			Span<byte> leftSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(left), left.Length);
 
 			if (Vector.IsHardwareAccelerated)
 			{
+				// Process in chunks of 4 vectors
 				int vectorLength = Vector<byte>.Count << 2;
 				vectorLimit = dest.Length - vectorLength;
 				for (; i <= vectorLimit; i += vectorLength)
@@ -37,6 +38,7 @@ namespace SecurityDriven
 					reference.Item1 ^= leftVectors.Item1;
 				}//for
 
+				// Process in chunks of 2 vectors
 				vectorLength >>= 1;
 				vectorLimit = dest.Length - vectorLength;
 				for (; i <= vectorLimit; i += vectorLength)
@@ -47,6 +49,7 @@ namespace SecurityDriven
 					reference2.Item1 ^= leftVectors2.Item1;
 				}//for
 
+				// Process in single vectors
 				vectorLength >>= 1;
 				vectorLimit = dest.Length - vectorLength;
 				for (; i <= vectorLimit; i += vectorLength)
@@ -55,12 +58,14 @@ namespace SecurityDriven
 				}
 			}// if Vector.IsHardwareAccelerated
 
+			// Process in chunks of longs
 			vectorLimit = dest.Length - sizeof(long);
 			for (; i <= vectorLimit; i += sizeof(long))
 			{
 				Unsafe.As<byte, long>(ref dest[i]) ^= Unsafe.As<byte, long>(ref leftSpan[i]);
 			}
 
+			// Process remaining bytes
 			for (; i < dest.Length; ++i)
 			{
 				dest[i] ^= leftSpan[i];
@@ -72,7 +77,7 @@ namespace SecurityDriven
 		public static void Xor(Span<byte> dest, ReadOnlySpan<byte> left, ReadOnlySpan<byte> right)
 		{
 			if ((dest.Length != left.Length) || (dest.Length != right.Length))
-				ThrowArgumentOutOfRange(message: nameof(dest) + "," + nameof(left) + "," + nameof(right) + " have different lengths.");
+				ThrowArgumentOutOfRange(message: $"{nameof(dest)}, {nameof(left)}, {nameof(right)} have different lengths.");
 
 			int i = 0, vectorLimit;
 			Span<byte> leftSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(left), left.Length);
@@ -80,6 +85,7 @@ namespace SecurityDriven
 
 			if (Vector.IsHardwareAccelerated)
 			{
+				// Process in chunks of 4 vectors
 				int vectorLength = Vector<byte>.Count << 2;
 				vectorLimit = dest.Length - vectorLength;
 				for (; i <= vectorLimit; i += vectorLength)
@@ -93,6 +99,7 @@ namespace SecurityDriven
 					destVectors.Item1 = leftVectors.Item1 ^ rightVectors.Item1;
 				}//for
 
+				// Process in chunks of 2 vectors
 				vectorLength >>= 1;
 				vectorLimit = dest.Length - vectorLength;
 				for (; i <= vectorLimit; i += vectorLength)
@@ -104,6 +111,7 @@ namespace SecurityDriven
 					destVectors.Item1 = leftVectors.Item1 ^ rightVectors.Item1;
 				}//for
 
+				// Process in single vectors
 				vectorLength >>= 1;
 				vectorLimit = dest.Length - vectorLength;
 				for (; i <= vectorLimit; i += vectorLength)
@@ -112,12 +120,14 @@ namespace SecurityDriven
 				}
 			}// if Vector.IsHardwareAccelerated
 
+			// Process in chunks of longs
 			vectorLimit = dest.Length - sizeof(long);
 			for (; i <= vectorLimit; i += sizeof(long))
 			{
 				Unsafe.As<byte, long>(ref dest[i]) = Unsafe.As<byte, long>(ref leftSpan[i]) ^ Unsafe.As<byte, long>(ref rightSpan[i]);
 			}
 
+			// Process remaining bytes
 			for (; i < dest.Length; ++i)
 			{
 				dest[i] = (byte)(leftSpan[i] ^ rightSpan[i]);

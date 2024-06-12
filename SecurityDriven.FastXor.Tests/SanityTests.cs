@@ -7,7 +7,7 @@ namespace SecurityDriven.Tests
 	public class SanityTests
 	{
 		[DataTestMethod]
-		[DataRow(1, 0, 0 /*, "alpha" */)]
+		[DataRow(1, 0, 1 /*, "alpha" */)]
 		public void VersionCheck(int major, int minor, int build, string releaseType = "")
 		{
 			Assembly assembly = typeof(FastXor).Assembly;

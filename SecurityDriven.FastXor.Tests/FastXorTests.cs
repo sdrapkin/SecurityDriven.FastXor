@@ -115,6 +115,78 @@ namespace SecurityDriven.Tests
 				Assert.IsTrue(SpanAll(leftSpan, static b => b == 0));
 			}//for
 		}//Xor_Overlap()
+
+		[TestMethod]
+		public void Xor_BoundaryConditions()
+		{
+			InitData(MAX_DATA_LENGTH);
+
+			var destSpan = _dest.AsSpan(0, MAX_DATA_LENGTH);
+			var leftSpan = _left.AsSpan(0, MAX_DATA_LENGTH);
+			var rightSpan = _right.AsSpan(0, MAX_DATA_LENGTH);
+
+			Correct.Xor(destSpan, leftSpan, rightSpan);
+			string correctMAC = Correct.MAC(destSpan);
+
+			destSpan.Clear();
+			FastXor.Xor(destSpan, leftSpan, rightSpan);
+			string testMAC = Correct.MAC(destSpan);
+			Assert.IsTrue(correctMAC == testMAC);
+
+			InitData(0);
+			destSpan = _dest.AsSpan(0, 0);
+			leftSpan = _left.AsSpan(0, 0);
+			rightSpan = _right.AsSpan(0, 0);
+
+			Correct.Xor(destSpan, leftSpan, rightSpan);
+			correctMAC = Correct.MAC(destSpan);
+
+			destSpan.Clear();
+			FastXor.Xor(destSpan, leftSpan, rightSpan);
+			testMAC = Correct.MAC(destSpan);
+			Assert.IsTrue(correctMAC == testMAC);
+		}
+
+		[TestMethod]
+		public void Xor_SingleByteLength()
+		{
+			InitData(1);
+
+			var destSpan = _dest.AsSpan(0, 1);
+			var leftSpan = _left.AsSpan(0, 1);
+			var rightSpan = _right.AsSpan(0, 1);
+
+			Correct.Xor(destSpan, leftSpan, rightSpan);
+			string correctMAC = Correct.MAC(destSpan);
+
+			destSpan.Clear();
+			FastXor.Xor(destSpan, leftSpan, rightSpan);
+			string testMAC = Correct.MAC(destSpan);
+			Assert.IsTrue(correctMAC == testMAC);
+		}
+
+		[TestMethod]
+		public void Xor_LargeDataSets()
+		{
+			const int LARGE_DATA_LENGTH = 128 * 1024; // 128 KB
+			_dest = new byte[LARGE_DATA_LENGTH];
+			_left = new byte[LARGE_DATA_LENGTH];
+			_right = new byte[LARGE_DATA_LENGTH];
+
+			InitData(LARGE_DATA_LENGTH);
+
+			var destSpan = _dest.AsSpan(0, LARGE_DATA_LENGTH);
+			var leftSpan = _left.AsSpan(0, LARGE_DATA_LENGTH);
+			var rightSpan = _right.AsSpan(0, LARGE_DATA_LENGTH);
+
+			Correct.Xor(destSpan, leftSpan, rightSpan);
+			string correctMAC = Correct.MAC(destSpan);
+
+			destSpan.Clear();
+			FastXor.Xor(destSpan, leftSpan, rightSpan);
+			string testMAC = Correct.MAC(destSpan);
+			Assert.IsTrue(correctMAC == testMAC);
+		}
 	}//class FastXorTests
 
 	internal static class Correct
